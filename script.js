@@ -1,6 +1,7 @@
 // Import Firebase modules
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -16,6 +17,58 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth();
+const provider = new GoogleAuthProvider();
+
+// Function to handle Google Sign-In
+async function signInWithGoogle() {
+    try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        console.log("User signed in: ", user.displayName);
+        return user;
+    } catch (error) {
+        console.error("Error signing in: ", error);
+    }
+}
+
+// Check if the user is already signed in
+onAuthStateChanged(auth, (user) => {
+    const profilePic = document.getElementById('profile-pic');
+    const userIcon = document.querySelector('.user-icon');
+    if (user) {
+        profilePic.src = user.photoURL;
+        profilePic.style.display = 'block';
+        userIcon.style.display = 'none';
+        console.log("User is already signed in: ", user.displayName);
+    } else {
+        profilePic.style.display = 'none';
+        userIcon.style.display = 'block';
+    }
+});
+// Function to display folders in the UI
+function displayFolders(folders) {
+    const folderList = document.querySelector('.folder-list');
+    folderList.innerHTML = ''; // Clear existing folders
+    if (folders && folders.length > 0) {
+        folders.forEach(folder => {
+            const folderElement = document.createElement('div');
+            folderElement.className = 'folder-item';
+            folderElement.textContent = folder.name;
+            folderList.appendChild(folderElement);
+        });
+    } else {
+        folderList.textContent = 'No folders found.';
+    }
+}
+
+// Add event listener to the user icon for login
+document.querySelector('.user-icon').addEventListener('click', async () => {
+    const user = await signInWithGoogle();
+    if (user) {
+        console.log("User signed in: ", user.displayName);
+    }
+});
 
 // Function to add a folder
 async function addFolder(folderName) {
@@ -131,15 +184,20 @@ function showPopup(title, inputPlaceholder, onOk, onCancel) {
 
 // Add folder button click event
 document.getElementById('add-folder-btn').addEventListener('click', async () => {
-    showPopup('Add Folder', 'Enter folder name', async (folderName) => {
-        if (folderName) {
-            const folderId = await addFolder(folderName);
-            if (folderId) {
-                const folderElement = createFolderElement(folderName, folderId);
-                document.querySelector('.sidebar-menu').appendChild(folderElement);
+    const user = auth.currentUser;
+    if (user) {
+        showPopup('Add Folder', 'Enter folder name', async (folderName) => {
+            if (folderName) {
+                const folderId = await addFolder(folderName);
+                if (folderId) {
+                    const folderElement = createFolderElement(folderName, folderId);
+                    document.querySelector('.sidebar-menu').appendChild(folderElement);
+                }
             }
-        }
-    });
+        });
+    } else {
+        showNotification("Please sign in to create a folder.");
+    }
 });
 
 // Function to load folders from Firebase
@@ -204,6 +262,7 @@ function createMediaItemElement(mediaData) {
         <div class="media-info">
             <span class="media-text">${mediaData.text}</span>
             <span class="media-date">${mediaData.date}</span>
+            <span class="media-username">Created by: ${mediaData.username}</span>
         </div>
     `;
     return mediaItem;
@@ -212,7 +271,26 @@ function createMediaItemElement(mediaData) {
 // Function to save new media item
 async function saveMediaItem(folderId, mediaData) {
     try {
-        await addDoc(collection(db, "folders", folderId, "media"), mediaData);
+        const user = auth.currentUser;
+        if (!user) {
+            showNotification("Please sign in to add media items.");
+            return;
+        }
+
+        const mediaItemData = {
+            ...mediaData,
+            date: new Date().toLocaleDateString('en-GB', { // Format date as DD/MM/YYYY
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            }),
+            username: user.displayName // Save the username of the current user
+        };
+
+        await addDoc(collection(db, "folders", folderId, "media"), mediaItemData);
         showNotification("Media item added!");
         loadMediaItems(folderId); // Reload media items
     } catch (e) {
@@ -225,7 +303,6 @@ document.querySelector('.input-text').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         const folderId = document.querySelector('.header-title').dataset.folderId;
         const mediaData = {
-            date: new Date().toLocaleString(), // Save the current date and time
             text: e.target.value
         };
         saveMediaItem(folderId, mediaData);

@@ -32,6 +32,11 @@ body {
     align-items: center;
 }
 
+.button-group {
+    display: flex;
+    gap: 10px; /* Adjust the gap between buttons as needed */
+}
+
 .add-folder-btn {
     background-color: #caf438;
     border: none;
@@ -52,6 +57,29 @@ body {
     background-color: transparent;
     border: 1px solid #ff7a01;
     color: #caf438;
+}
+
+/* Add styles for the new import button */
+.import-btn {
+    background-color: #ff7a01;
+    border: none;
+    color: #ffffff;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.import-btn:hover {
+    background-color: transparent;
+    border: 1px solid #ff7a01;
+    color: #ff7a01;
 }
 
 .sidebar-menu h3 {
@@ -398,4 +426,57 @@ body {
     10% { opacity: 1; }
     90% { opacity: 1; }
     100% { opacity: 0; }
+}
+
+/* Folder list styles */
+.folder-list {
+    padding: 20px;
+    background-color: #002733;
+    border-radius: 5px;
+    margin-top: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.folder-item {
+    padding: 10px;
+    background-color: #013747;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.folder-item:hover {
+    background-color: #014f6e;
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.media-username {
+    margin-left: 10px;
+    display: block;
+    font-size: 0.8em;
+    color: #888;
+}
+
+/* style for link cliakbale  */
+
+.google-drive-button {
+    background-color: #4285F4;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+.other-url-link {
+    background-color: #f0f0f0;
+    color: #000;
+    padding: 5px;
+    text-decoration: none;
 }

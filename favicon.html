@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Drive Image/Video Fetcher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        input {
+            width: 300px;
+            padding: 10px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 15px;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        img, video {
+            max-width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Google Drive Image/Video Fetcher</h1>
+<input type="text" id="driveLink" placeholder="Enter Google Drive link" />
+<button id="fetchBtn">Fetch Preview</button>
+
+<div id="result"></div>
+
+<script>
+    document.getElementById("fetchBtn").addEventListener("click", function() {
+        const driveLink = document.getElementById("driveLink").value;
+
+        // Extract file ID from the Google Drive link
+        const fileIdMatch = driveLink.match(/\/d\/([^\/]+)/);
+        const fileId = fileIdMatch ? fileIdMatch[1] : null;
+
+        if (!fileId) {
+            alert("Please enter a valid Google Drive link.");
+            return;
+        }
+
+        // Create a downloadable URL for the file
+        const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+
+        // Fetch the file in the background
+        fetch(downloadUrl)
+            .then(response => response.blob())
+            .then(blob => {
+                const imgUrl = URL.createObjectURL(blob);
+                const imgElement = document.createElement("img");
+                imgElement.src = imgUrl;
+                imgElement.alt = "Downloaded Image";
+
+                // Insert the image at the top of the page
+                document.body.insertBefore(imgElement, document.body.firstChild);
+            })
+            .catch(error => {
+                console.error("Error downloading the image:", error);
+                alert("An error occurred while downloading the image.");
+            });
+    });
+</script>
+</body>
+</html>
