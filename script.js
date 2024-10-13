@@ -305,11 +305,11 @@ function createMediaItemElement(mediaData) {
         mediaData.files.forEach(file => {
             let filePreview;
             if (file.type.startsWith('image/')) {
-                filePreview = `<img src="${file.url}" alt="${file.name}" class="media-thumbnail">`;
+                filePreview = `<img src="${file.url}" alt="${file.name}" class="media-thumbnail" onclick="window.location.href='${file.url}'">`;
             } else if (file.type.startsWith('video/')) {
                 filePreview = `<video src="${file.url}" controls class="media-thumbnail"></video>`;
             } else {
-                filePreview = `<a href="${file.url}" download="${file.name}" class="media-thumbnail">${file.name}</a>`;
+                filePreview = `<i class="fas fa-file-alt media-thumbnail" onclick="window.location.href='${file.url}'"></i>`;
             }
             mediaItem.innerHTML += filePreview;
         });
@@ -425,11 +425,11 @@ function displayFilePreview(fileData) {
     mediaItem.className = 'media-item';
 
     if (fileData.type.startsWith('image/')) {
-        mediaItem.innerHTML = `<img src="${fileData.url}" alt="${fileData.name}" class="media-thumbnail">`;
+        mediaItem.innerHTML = `<img src="${fileData.url}" alt="${fileData.name}" class="media-thumbnail" onclick="window.location.href='${fileData.url}'">`;
     } else if (fileData.type.startsWith('video/')) {
         mediaItem.innerHTML = `<video src="${fileData.url}" controls class="media-thumbnail"></video>`;
     } else {
-        mediaItem.innerHTML = `<a href="${fileData.url}" download="${fileData.name}" class="media-thumbnail">${fileData.name}</a>`;
+        mediaItem.innerHTML = `<i class="fas fa-file-alt media-thumbnail" onclick="window.location.href='${fileData.url}'"></i>`;
     }
 
     mediaList.appendChild(mediaItem);
