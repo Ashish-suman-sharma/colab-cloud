@@ -2,6 +2,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -19,6 +20,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth();
 const provider = new GoogleAuthProvider();
+const storage = getStorage(app);
 
 // Function to handle Google Sign-In
 async function signInWithGoogle() {
@@ -297,6 +299,22 @@ function createMediaItemElement(mediaData) {
             <span class="media-username">Created by: ${mediaData.username}</span>
         </div>
     `;
+
+    // Add file previews if available
+    if (mediaData.files && mediaData.files.length > 0) {
+        mediaData.files.forEach(file => {
+            let filePreview;
+            if (file.type.startsWith('image/')) {
+                filePreview = `<img src="${file.url}" alt="${file.name}" class="media-thumbnail">`;
+            } else if (file.type.startsWith('video/')) {
+                filePreview = `<video src="${file.url}" controls class="media-thumbnail"></video>`;
+            } else {
+                filePreview = `<a href="${file.url}" download="${file.name}" class="media-thumbnail">${file.name}</a>`;
+            }
+            mediaItem.innerHTML += filePreview;
+        });
+    }
+
     return mediaItem;
 }
 
@@ -336,12 +354,86 @@ document.querySelector('.input-text').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         const folderId = document.querySelector('.header-title').dataset.folderId;
         const mediaData = {
-            text: e.target.value
+            text: e.target.value,
+            files: Array.from(document.getElementById('file-input').files).map(file => ({
+                name: file.name,
+                url: URL.createObjectURL(file),
+                type: file.type
+            }))
         };
         saveMediaItem(folderId, mediaData);
         e.target.value = ''; // Clear input field
+        document.getElementById('file-input').value = ''; // Clear file input
     }
 });
+
+// Add event listener to the clip icon to open the file manager
+document.querySelector('.attach-icon').addEventListener('click', () => {
+    document.getElementById('file-input').click();
+});
+
+// Handle file selection and upload
+document.getElementById('file-input').addEventListener('change', async (event) => {
+    const files = event.target.files;
+    const folderId = document.querySelector('.header-title').dataset.folderId;
+
+    if (files.length > 0 && folderId) {
+        for (const file of files) {
+            const fileData = await handleFileUpload(file);
+            await saveMediaItem(folderId, { files: [fileData] });
+            displayFilePreview(fileData);
+        }
+    }
+});
+
+// Function to handle file upload
+async function handleFileUpload(file) {
+    return new Promise((resolve, reject) => {
+        const storageRef = ref(storage, `uploads/${file.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        // Show loading bar
+        const loadingBarContainer = document.getElementById('loading-bar-container');
+        const loadingBar = document.getElementById('loading-bar');
+        loadingBarContainer.style.display = 'block';
+
+        // Update loading bar progress
+        uploadTask.on('state_changed', (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            loadingBar.style.width = `${progress}%`;
+        }, (error) => {
+            console.error("Error uploading file: ", error);
+            reject(error);
+        }, () => {
+            // Hide loading bar
+            loadingBarContainer.style.display = 'none';
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                resolve({
+                    name: file.name,
+                    url: downloadURL,
+                    type: file.type
+                });
+            });
+        });
+    });
+}
+
+// Function to display file preview in the media list
+function displayFilePreview(fileData) {
+    const mediaList = document.querySelector('.media-list');
+    const mediaItem = document.createElement('div');
+    mediaItem.className = 'media-item';
+
+    if (fileData.type.startsWith('image/')) {
+        mediaItem.innerHTML = `<img src="${fileData.url}" alt="${fileData.name}" class="media-thumbnail">`;
+    } else if (fileData.type.startsWith('video/')) {
+        mediaItem.innerHTML = `<video src="${fileData.url}" controls class="media-thumbnail"></video>`;
+    } else {
+        mediaItem.innerHTML = `<a href="${fileData.url}" download="${fileData.name}" class="media-thumbnail">${fileData.name}</a>`;
+    }
+
+    mediaList.appendChild(mediaItem);
+}
 
 // Function to show notification
 function showNotification(message) {

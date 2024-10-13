@@ -519,3 +519,12 @@ body {
     border: 1px solid orange;
     color: orange;
 }
+
+/* Add styles for media thumbnails */
+.media-thumbnail {
+    max-width: 100px;
+    max-height: 100px;
+    margin-right: 10px;
+    border-radius: 5px;
+    object-fit: cover;
+}

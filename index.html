@@ -43,6 +43,9 @@
                 <!-- Example media item -->
                 <!-- Removed static media item -->
             </div>
+            <div id="loading-bar-container" style="display: none;">
+                <div id="loading-bar" style="width: 0%; height: 5px; background-color: #4caf50;"></div>
+            </div>
             <div class="message-input">
                 <input type="text" placeholder="Text..." class="input-text">
                 <i class="fas fa-paperclip attach-icon"></i>
@@ -63,7 +66,7 @@
         <div class="popup-content">
             <span id="popup-close" class="popup-close">&times;</span>
             <h3 id="popup-title"></h3>
-                        <input type="text" id="popup-input" class="popup-input" placeholder="Enter folder name" autocomplete="off">
+            <input type="text" id="popup-input" class="popup-input" placeholder="Enter folder name" autocomplete="off">
             <div class="popup-buttons">
                 <button id="popup-ok" class="popup-btn">OK</button>
                 <button id="popup-cancel" class="popup-btn">Cancel</button>
@@ -71,7 +74,9 @@
         </div>
     </div>
     <div id="notification-container" class="notification-container"></div>
-
+    <input type="file" id="file-input" style="display: none;" multiple>
+    <!-- Add this inside the body tag, preferably near the existing input elements -->
+    
     <script type="module" src="script.js"></script>
 </body>
 
