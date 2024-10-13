@@ -145,8 +145,20 @@ body {
 
 .media-info {
     display: flex;
-    flex-direction: column;
-    font-size: 14px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.media-text {
+    flex-grow: 1;
+}
+
+.media-date {
+    margin-left: 20px;
+    color: #888;
+    font-size: 0.9em;
 }
 
 .message-input {

@@ -49,6 +49,9 @@ function createFolderElement(folderName, folderId) {
     // Add event listener to update header title when folder is clicked
     menuItem.addEventListener('click', () => {
         document.querySelector('.header-title').textContent = folderName;
+        document.querySelector('.header-title').dataset.folderId = folderId;
+        loadMediaItems(folderId); // Load media items for the selected folder
+        localStorage.setItem('lastOpenedFolderId', folderId); // Save last opened folder ID to local storage
     });
 
     return menuItem;
@@ -143,15 +146,92 @@ document.getElementById('add-folder-btn').addEventListener('click', async () => 
 async function loadFolders() {
     try {
         const querySnapshot = await getDocs(collection(db, "folders"));
+        const folders = [];
         querySnapshot.forEach((doc) => {
             const folderName = doc.data().name;
             const folderElement = createFolderElement(folderName, doc.id);
             document.querySelector('.sidebar-menu').appendChild(folderElement);
+            folders.push({ id: doc.id, name: folderName });
         });
+
+        // Check local storage for last opened folder ID
+        const lastOpenedFolderId = localStorage.getItem('lastOpenedFolderId');
+        if (lastOpenedFolderId) {
+            const lastOpenedFolder = folders.find(folder => folder.id === lastOpenedFolderId);
+            if (lastOpenedFolder) {
+                document.querySelector('.header-title').textContent = lastOpenedFolder.name;
+                document.querySelector('.header-title').dataset.folderId = lastOpenedFolder.id;
+                loadMediaItems(lastOpenedFolder.id); // Load media items for the last opened folder
+            } else if (folders.length > 0) {
+                // If the last opened folder is not found, open the first folder
+                document.querySelector('.header-title').textContent = folders[0].name;
+                document.querySelector('.header-title').dataset.folderId = folders[0].id;
+                loadMediaItems(folders[0].id); // Load media items for the first folder
+            }
+        } else if (folders.length > 0) {
+            // If no last opened folder ID in local storage, open the first folder
+            document.querySelector('.header-title').textContent = folders[0].name;
+            document.querySelector('.header-title').dataset.folderId = folders[0].id;
+            loadMediaItems(folders[0].id); // Load media items for the first folder
+        }
     } catch (e) {
         console.error("Error loading folders: ", e);
     }
 }
+
+// Function to load media items for a folder
+async function loadMediaItems(folderId) {
+    const mediaList = document.querySelector('.media-list');
+    mediaList.innerHTML = ''; // Clear existing media items
+
+    try {
+        const querySnapshot = await getDocs(collection(db, "folders", folderId, "media"));
+        querySnapshot.forEach((doc) => {
+            const mediaData = doc.data();
+            const mediaItem = createMediaItemElement(mediaData);
+            mediaList.appendChild(mediaItem);
+        });
+    } catch (e) {
+        console.error("Error loading media items: ", e);
+    }
+}
+
+// Function to create media item element
+function createMediaItemElement(mediaData) {
+    const mediaItem = document.createElement('div');
+    mediaItem.className = 'media-item';
+    mediaItem.innerHTML = `
+        <div class="media-info">
+            <span class="media-text">${mediaData.text}</span>
+            <span class="media-date">${mediaData.date}</span>
+        </div>
+    `;
+    return mediaItem;
+}
+
+// Function to save new media item
+async function saveMediaItem(folderId, mediaData) {
+    try {
+        await addDoc(collection(db, "folders", folderId, "media"), mediaData);
+        showNotification("Media item added!");
+        loadMediaItems(folderId); // Reload media items
+    } catch (e) {
+        console.error("Error adding media item: ", e);
+    }
+}
+
+// Add event listener to input field to save media item on Enter
+document.querySelector('.input-text').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        const folderId = document.querySelector('.header-title').dataset.folderId;
+        const mediaData = {
+            date: new Date().toLocaleString(), // Save the current date and time
+            text: e.target.value
+        };
+        saveMediaItem(folderId, mediaData);
+        e.target.value = ''; // Clear input field
+    }
+});
 
 // Function to show notification
 function showNotification(message) {
