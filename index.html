@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 </head>
+
 <body>
     <div class="container">
         <!-- Sidebar -->
@@ -31,19 +33,13 @@
             <div class="header">
                 <div class="header-left">
                     <i class="far fa-folder menu-icon"></i>
-                    <span class="header-title"></span>
+                    <span class="header-title" data-folder-id=""></span>
                 </div>
                 <i class="icon-search search-icon"></i>
             </div>
             <div class="media-list">
                 <!-- Example media item -->
-                <div class="media-item">
-                    <img src="" alt="media-thumbnail" class="media-thumbnail">
-                    <div class="media-info">
-                        <span>14/9/2024</span>
-                        <span>2.2 MB</span>
-                    </div>
-                </div>
+                <!-- Removed static media item -->
             </div>
             <div class="message-input">
                 <input type="text" placeholder="Text..." class="input-text">
@@ -60,7 +56,21 @@
             <button id="delete-folder-btn">Delete Folder</button>
         </div>
     </div>
+    <!-- Add this inside the body tag -->
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span id="popup-close" class="popup-close">&times;</span>
+            <h3 id="popup-title"></h3>
+            <input type="text" id="popup-input" class="popup-input" placeholder="Enter folder name">
+            <div class="popup-buttons">
+                <button id="popup-ok" class="popup-btn">OK</button>
+                <button id="popup-cancel" class="popup-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div id="notification-container" class="notification-container"></div>
 
     <script type="module" src="script.js"></script>
 </body>
+
 </html>

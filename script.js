@@ -46,6 +46,11 @@ function createFolderElement(folderName, folderId) {
         toggleFullSidebar(folderName, folderId);
     });
 
+    // Add event listener to update header title when folder is clicked
+    menuItem.addEventListener('click', () => {
+        document.querySelector('.header-title').textContent = folderName;
+    });
+
     return menuItem;
 }
 
@@ -62,7 +67,7 @@ function toggleFullSidebar(folderName, folderId) {
         if (newFolderName) {
             const folderDocRef = doc(db, "folders", folderId);
             await updateDoc(folderDocRef, { name: newFolderName });
-            alert("Folder name changed!");
+            showNotification("Folder name changed!");
             sidebarForm.classList.remove('open');
             location.reload(); // Refresh the page to update the folder list
         }
@@ -70,13 +75,18 @@ function toggleFullSidebar(folderName, folderId) {
 
     // Delete folder button logic
     document.getElementById('delete-folder-btn').onclick = async () => {
-        const confirmation = confirm("Are you sure you want to delete this folder?");
-        if (confirmation) {
-            await deleteDoc(doc(db, "folders", folderId));
-            alert("Folder deleted!");
-            sidebarForm.classList.remove('open');
-            location.reload(); // Refresh the page to update the folder list
-        }
+        showPopup('Delete Folder', 'Enter password', async (password) => {
+            if (password === '915566') {
+                await deleteDoc(doc(db, "folders", folderId));
+                showNotification("Folder deleted!");
+                sidebarForm.classList.remove('open');
+                location.reload(); // Refresh the page to update the folder list
+            } else {
+                showNotification("Incorrect password!");
+            }
+        }, () => {
+            // Cancel action
+        });
     };
 
     // Back arrow click event to close the sidebar
@@ -85,16 +95,48 @@ function toggleFullSidebar(folderName, folderId) {
     };
 }
 
+// Function to show popup
+function showPopup(title, inputPlaceholder, onOk, onCancel) {
+    const popup = document.getElementById('popup');
+    const popupTitle = document.getElementById('popup-title');
+    const popupInput = document.getElementById('popup-input');
+    const popupOk = document.getElementById('popup-ok');
+    const popupCancel = document.getElementById('popup-cancel');
+    const popupClose = document.getElementById('popup-close');
+
+    popupTitle.textContent = title;
+    popupInput.placeholder = inputPlaceholder;
+    popupInput.value = '';
+
+    popupOk.onclick = () => {
+        onOk(popupInput.value);
+        popup.style.display = 'none';
+    };
+
+    popupCancel.onclick = () => {
+        if (onCancel) onCancel();
+        popup.style.display = 'none';
+    };
+
+    popupClose.onclick = () => {
+        if (onCancel) onCancel();
+        popup.style.display = 'none';
+    };
+
+    popup.style.display = 'flex';
+}
+
 // Add folder button click event
 document.getElementById('add-folder-btn').addEventListener('click', async () => {
-    const folderName = prompt('Enter folder name:');
-    if (folderName) {
-        const folderId = await addFolder(folderName);
-        if (folderId) {
-            const folderElement = createFolderElement(folderName, folderId);
-            document.querySelector('.sidebar-menu').appendChild(folderElement);
+    showPopup('Add Folder', 'Enter folder name', async (folderName) => {
+        if (folderName) {
+            const folderId = await addFolder(folderName);
+            if (folderId) {
+                const folderElement = createFolderElement(folderName, folderId);
+                document.querySelector('.sidebar-menu').appendChild(folderElement);
+            }
         }
-    }
+    });
 });
 
 // Function to load folders from Firebase
@@ -109,6 +151,20 @@ async function loadFolders() {
     } catch (e) {
         console.error("Error loading folders: ", e);
     }
+}
+
+// Function to show notification
+function showNotification(message) {
+    const notificationContainer = document.getElementById('notification-container');
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    notificationContainer.appendChild(notification);
+
+    // Remove notification after animation ends
+    notification.addEventListener('animationend', () => {
+        notificationContainer.removeChild(notification);
+    });
 }
 
 // Call loadFolders when the page loads
