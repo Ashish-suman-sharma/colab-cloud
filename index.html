@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>own-cloud</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Load Firebase SDK correctly -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 </head>
-
 <body>
     <div class="container">
         <!-- Sidebar -->
@@ -25,12 +22,12 @@
             </div>
             <div class="sidebar-menu">
                 <h3>Folder</h3>
+                <!-- Dynamically populated folder list -->
             </div>
         </div>
 
         <!-- Main content -->
         <div class="main-content">
-            <!-- Header -->
             <div class="header">
                 <div class="header-left">
                     <i class="far fa-folder menu-icon"></i>
@@ -38,9 +35,8 @@
                 </div>
                 <i class="icon-search search-icon"></i>
             </div>
-
-            <!-- Media list -->
             <div class="media-list">
+                <!-- Example media item -->
                 <div class="media-item">
                     <img src="" alt="media-thumbnail" class="media-thumbnail">
                     <div class="media-info">
@@ -49,22 +45,22 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Message input -->
             <div class="message-input">
                 <input type="text" placeholder="Text..." class="input-text">
                 <i class="fas fa-paperclip attach-icon"></i>
             </div>
         </div>
+
+        <!-- Full Sidebar Form for Folder Actions -->
+        <div id="full-sidebar" class="sidebar-form">
+            <i id="back-arrow" class="fas fa-arrow-left back-arrow"></i>
+            <h3>Folder Setting</h3>
+            <input type="text" id="folder-name-input" value="" placeholder="Folder Name">
+            <button id="change-folder-name-btn">Change Folder Name</button>
+            <button id="delete-folder-btn">Delete Folder</button>
+        </div>
     </div>
-        <!-- Sidebar Form -->
-    <div class="sidebar-form" id="sidebar-form">
-        <h3>Edit Folder</h3>
-        <input type="text" id="folder-name-input" placeholder="Folder Name">
-        <button id="change-folder-name-btn">Change Folder Name</button>
-        <button id="delete-folder-btn">Delete Folder</button>
-    </div>
+
     <script type="module" src="script.js"></script>
 </body>
-
 </html>

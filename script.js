@@ -1,6 +1,6 @@
 // Import Firebase modules
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
-import { getFirestore, collection, addDoc, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -34,15 +34,59 @@ async function addFolder(folderName) {
 function createFolderElement(folderName, folderId) {
     const menuItem = document.createElement('div');
     menuItem.className = 'menu-item';
-    menuItem.innerHTML = `<i class="far fa-folder menu-icon"></i><span>${folderName}</span><i class="fas fa-ellipsis-v menu-icon"></i>`;
-    menuItem.addEventListener('click', function () {
-        document.querySelector('.header-title').textContent = folderName;
+    menuItem.setAttribute('data-folder-id', folderId); // Store folder ID for later use
+    menuItem.innerHTML = `
+        <i class="far fa-folder menu-icon"></i>
+        <span>${folderName}</span>
+        <i class="fas fa-ellipsis-v menu-icon"></i>
+    `;
+
+    // Handle 3-dot click to open full sidebar
+    menuItem.querySelector('.fa-ellipsis-v').addEventListener('click', (e) => {
+        toggleFullSidebar(folderName, folderId);
     });
+
     return menuItem;
 }
 
-// Make addFolderClickHandler available globally
-window.addFolderClickHandler = async function() {
+// Function to toggle the sidebar form with animation
+function toggleFullSidebar(folderName, folderId) {
+    const sidebarForm = document.getElementById('full-sidebar');
+    const folderNameInput = document.getElementById('folder-name-input');
+    sidebarForm.classList.toggle('open'); // Toggle the sidebar open/close
+    folderNameInput.value = folderName; // Set the folder name in input
+
+    // Change folder name button logic
+    document.getElementById('change-folder-name-btn').onclick = async () => {
+        const newFolderName = folderNameInput.value;
+        if (newFolderName) {
+            const folderDocRef = doc(db, "folders", folderId);
+            await updateDoc(folderDocRef, { name: newFolderName });
+            alert("Folder name changed!");
+            sidebarForm.classList.remove('open');
+            location.reload(); // Refresh the page to update the folder list
+        }
+    };
+
+    // Delete folder button logic
+    document.getElementById('delete-folder-btn').onclick = async () => {
+        const confirmation = confirm("Are you sure you want to delete this folder?");
+        if (confirmation) {
+            await deleteDoc(doc(db, "folders", folderId));
+            alert("Folder deleted!");
+            sidebarForm.classList.remove('open');
+            location.reload(); // Refresh the page to update the folder list
+        }
+    };
+
+    // Back arrow click event to close the sidebar
+    document.getElementById('back-arrow').onclick = () => {
+        sidebarForm.classList.remove('open');
+    };
+}
+
+// Add folder button click event
+document.getElementById('add-folder-btn').addEventListener('click', async () => {
     const folderName = prompt('Enter folder name:');
     if (folderName) {
         const folderId = await addFolder(folderName);
@@ -51,10 +95,7 @@ window.addFolderClickHandler = async function() {
             document.querySelector('.sidebar-menu').appendChild(folderElement);
         }
     }
-};
-
-// Add folder button click event
-document.getElementById('add-folder-btn').addEventListener('click', window.addFolderClickHandler);
+});
 
 // Function to load folders from Firebase
 async function loadFolders() {
@@ -70,10 +111,5 @@ async function loadFolders() {
     }
 }
 
-
-
 // Call loadFolders when the page loads
 window.addEventListener('load', loadFolders);
-
-// Export the loadFolders function
-export { loadFolders };

@@ -1,3 +1,4 @@
+/* General styles */
 * {
     margin: 0;
     padding: 0;
@@ -6,7 +7,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #1e1e1e;
+    background-color: #001925;
     color: #ffffff;
 }
 
@@ -18,7 +19,7 @@ body {
 
 /* Sidebar styling */
 .sidebar {
-    background-color: #232323;
+    background-color: #002733;
     width: 250px;
     padding: 20px;
     display: flex;
@@ -32,40 +33,37 @@ body {
 }
 
 .add-folder-btn {
-    background-color: #007BFF; /* Updated to a modern blue color */
+    background-color: #caf438;
     border: none;
-    color: white;
-    padding: 8px 16px; /* Slightly smaller padding */
+    color: #001925;
+    padding: 10px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 14px; /* Slightly smaller font size */
+    font-size: 14px;
     margin: 4px 2px;
     cursor: pointer;
     border-radius: 5px;
     transition: background-color 0.3s, box-shadow 0.3s;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Added box-shadow */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .add-folder-btn:hover {
-    background-color: #0056b3; /* Darker blue on hover */
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Slightly larger shadow on hover */
-}
-
-.add-folder-btn:hover {
-    background-color: #45a049;
+    background-color: transparent;
+    border: 1px solid #ff7a01;
+    color: #caf438;
 }
 
 .sidebar-menu h3 {
     margin-top: 20px;
     margin-bottom: 10px;
-    color: #ccc;
+    color: #d3f35f;
 }
 
 .menu-item {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Distribute space between children */
+    justify-content: space-between;
     padding: 10px 0;
     cursor: pointer;
 }
@@ -79,7 +77,7 @@ body {
 }
 
 .menu-item:hover {
-    background-color: #333;
+    background-color: #013747;
     padding-left: 5px;
     transition: 0.3s;
 }
@@ -91,20 +89,20 @@ body {
 
 .status {
     font-size: 12px;
-    color: #ccc;
+    color: #87a4b6;
 }
 
 /* Main content styling */
 .main-content {
     flex: 1;
-    background-color: #1d1d1d;
+    background-color: #001925;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
 .header {
-    background-color: #1d1d1d;
+    background-color: #001925;
     padding: 20px;
     display: flex;
     align-items: center;
@@ -120,7 +118,7 @@ body {
 .header-title {
     font-size: 18px;
     color: #ffffff;
-    margin-right: 20px; /* Add some space between the title and the search icon */
+    margin-right: 20px;
 }
 
 .media-list {
@@ -132,7 +130,7 @@ body {
 .media-item {
     display: flex;
     align-items: center;
-    background-color: #333;
+    background-color: #013747;
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 5px;
@@ -155,18 +153,25 @@ body {
     display: flex;
     align-items: center;
     padding: 20px;
-    background-color: #232323;
+    background-color: #002733;
     border-top: 1px solid #444;
 }
 
 .input-text {
     flex: 0.9;
     padding: 10px;
-    background-color: #333;
+    background-color: #013747;
     border: none;
-    color: #fff;
+    color: #87a4b6;
     border-radius: 5px;
     margin-right: 10px;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+    border-left: 1px solid transparent;
+}
+
+.input-text:focus {
+    border-left: 5px solid #caf438;
 }
 
 .attach-icon, .send-icon {
@@ -177,7 +182,7 @@ body {
 /* Sidebar form styling */
 .sidebar-form {
     display: none;
-    background-color: #232323;
+    background-color: #002733;
     padding: 20px;
     position: absolute;
     top: 0;
@@ -191,7 +196,7 @@ body {
 }
 
 .sidebar-form h3 {
-    color: #fff;
+    color: #d3f35f;
     margin-bottom: 20px;
 }
 
@@ -199,8 +204,17 @@ body {
     width: 80%;
     padding: 10px;
     margin-bottom: 20px;
+    background-color: #013747;
     border: none;
+    color: #87a4b6;
     border-radius: 5px;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+    border-left: 1px solid transparent;
+}
+
+.sidebar-form input:focus {
+    border-left: 5px solid #caf438;
 }
 
 .sidebar-form button {
@@ -209,12 +223,64 @@ body {
     margin-bottom: 10px;
     border: none;
     border-radius: 5px;
-    background-color: #007BFF;
-    color: #fff;
+    background-color: #caf438;
+    color: #001925;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.2s ease-in-out;
 }
 
 .sidebar-form button:hover {
-    background-color: #0056b3;
+    background-color: transparent;
+    border: 1px solid #ff7a01;
+    color: #caf438;
+}
+
+/* Delete button styling */
+#delete-folder-btn {
+    background-color: #ff0000;
+    color: #ffffff;
+}
+
+#delete-folder-btn:hover {
+    background-color: #cc0000;
+}
+
+/* Sidebar form with animation */
+.sidebar-form {
+    display: none;
+    background-color: #002733;
+    padding: 20px;
+    position: absolute;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    z-index: 10;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: left 0.5s ease;
+}
+
+.sidebar-form.open {
+    display: flex;
+    animation: slideIn 0.5s forwards;
+}
+
+.back-arrow {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #caf438;
+}
+
+@keyframes slideIn {
+    from {
+        left: -300px;
+    }
+    to {
+        left: 0;
+    }
 }
