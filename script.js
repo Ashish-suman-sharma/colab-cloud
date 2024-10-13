@@ -46,6 +46,7 @@ onAuthStateChanged(auth, (user) => {
         userIcon.style.display = 'block';
     }
 });
+
 // Function to display folders in the UI
 function displayFolders(folders) {
     const folderList = document.querySelector('.folder-list');
@@ -254,13 +255,44 @@ async function loadMediaItems(folderId) {
     }
 }
 
+// Function to convert Google Drive shareable link to direct download link
+function convertToDirectDownload(shareableLink) {
+    if (shareableLink.includes("drive.google.com/file/d/")) {
+        const fileId = shareableLink.split("/d/")[1].split("/")[0];
+        const downloadLink = `https://drive.google.com/uc?export=download&id=${fileId}`;
+        return downloadLink;
+    } else {
+        return shareableLink; // Return the original link if it's not a Google Drive link
+    }
+}
+
+// Function to parse text and identify URLs
+function parseText(text) {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(urlRegex);
+    return parts.map(part => {
+        if (part.match(urlRegex)) {
+            if (part.includes('drive.google.com')) {
+                const downloadLink = convertToDirectDownload(part);
+                return `
+                    <button class="google-drive-button" onclick="window.location.href='${downloadLink}'">Download</button>
+                    <button class="google-drive-view-button" onclick="window.location.href='${part}'">View</button>
+                `;
+            } else {
+                return `<a href="${part}" class="other-url-link">${part}</a>`;
+            }
+        }
+        return part;
+    }).join('');
+}
+
 // Function to create media item element
 function createMediaItemElement(mediaData) {
     const mediaItem = document.createElement('div');
     mediaItem.className = 'media-item';
     mediaItem.innerHTML = `
         <div class="media-info">
-            <span class="media-text">${mediaData.text}</span>
+            <span class="media-text">${parseText(mediaData.text)}</span>
             <span class="media-date">${mediaData.date}</span>
             <span class="media-username">Created by: ${mediaData.username}</span>
         </div>
@@ -279,6 +311,7 @@ async function saveMediaItem(folderId, mediaData) {
 
         const mediaItemData = {
             ...mediaData,
+            text: convertToDirectDownload(mediaData.text), // Convert Google Drive link before saving
             date: new Date().toLocaleDateString('en-GB', { // Format date as DD/MM/YYYY
                 day: '2-digit',
                 month: '2-digit',

@@ -465,18 +465,57 @@ body {
     color: #888;
 }
 
-/* style for link cliakbale  */
 
+/* Add styles for Google Drive button and other URL link */
 .google-drive-button {
     background-color: #4285F4;
     color: white;
     border: none;
-    padding: 5px 10px;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
     cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+.google-drive-button:hover {
+    background-color: transparent;
+    border: 1px solid #4285F4;
+    color: #4285F4;
+}
+
 .other-url-link {
-    background-color: #f0f0f0;
+    background-color: #cfb79d;
     color: #000;
     padding: 5px;
     text-decoration: none;
+    border-radius: 5px;
+    margin: 0 5px;
+}
+
+.google-drive-view-button {
+    background-color: orange;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.google-drive-view-button:hover {
+    background-color: transparent;
+    border: 1px solid orange;
+    color: orange;
 }
